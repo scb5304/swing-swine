@@ -1,20 +1,19 @@
 import * as Phaser from 'phaser';
 import Scene = Phaser.Scene;
 import Image = Phaser.GameObjects.Image;
+import {Position} from "../models/Position";
+import GameObject = Phaser.GameObjects.GameObject;
 
 export class GameScene extends Scene {
 
     private centerPoint: Phaser.Geom.Point;
-    private topCoinPoint: Phaser.Geom.Point;
-    private rightCoinPoint: Phaser.Geom.Point;
-    private bottomCoinPoint: Phaser.Geom.Point;
-    private leftCoinPoint: Phaser.Geom.Point;
-
     private sky: Image;
     private whirlwind: Image;
     private pig: Phaser.Physics.Matter.Image;
-
-    private coins: Image[] = [];
+    private coinDistanceFromOrigin: number;
+    private scoreText: Phaser.GameObjects.Text;
+    private score: number = 0;
+    private coins: GameObject[] = [];
 
     //@Override
     public preload(): void {
@@ -27,9 +26,6 @@ export class GameScene extends Scene {
     //@Override
     public create(): void {
         this.centerPoint = new Phaser.Geom.Point(this.sys.canvas.width / 2, this.sys.canvas.height / 2);
-        //this.bottomCoinPoint = new Phaser.Geom.Point(this.centerPoint.x, this.sys.canvas.height / 5);
-        //this.leftCoinPoint = new Phaser.Geom.Point(this.centerPoint.x, this.sys.canvas.height / 5);
-
         this.sky = this.add.image(this.centerPoint.x, this.centerPoint.y, 'sky');
 
         this.whirlwind = this.add.image(this.centerPoint.x, this.centerPoint.y, 'whirlwind');
@@ -39,68 +35,79 @@ export class GameScene extends Scene {
         let pigBodyOffset = 250;
         this.pig = this.matter.add.image(this.centerPoint.x, this.centerPoint.y - pigBodyOffset, 'pig');
         this.pig.name = "piggy";
-        let pigRect = this.pig.setRectangle(50, 100, null);
-
-        // @ts-ignore
+        let pigRect: any = this.pig.setRectangle(50, 100, null);
         pigRect.body.isStatic = true;
-
-        // @ts-ignore
         pigRect.body.position.y += pigBodyOffset;
-
-        // @ts-ignore
         pigRect.body.name = "piggy";
 
         let pigHeight = this.pig.displayHeight;
         let pigWidth = this.pig.displayWidth;
         this.pig.setDisplayOrigin(pigWidth / 2, pigHeight);
 
-        this.initPoints();
-        this.coins.push(null);
-        this.coins.push(this.matter.add.image(this.rightCoinPoint.x, this.rightCoinPoint.y, 'silverCoin'));
-        this.coins.push(this.matter.add.image(this.bottomCoinPoint.x, this.bottomCoinPoint.y, 'silverCoin'));
-        this.coins.push(this.matter.add.image(this.leftCoinPoint.x, this.leftCoinPoint.y, 'silverCoin'));
-
-        this.matter.world.on('collisionstart', (event: any, body1: any, body2: any) => {
-            let coin: any;
-            coin = body1.name == "piggy" ? body2.gameObject : body1.gameObject;
-
-            let indexOfCoin: number = this.coins.indexOf(coin);
-
-            if (indexOfCoin != -1) {
-                console.warn("This coin exists in the list: " + this.coins[indexOfCoin]);
-                this.coins[indexOfCoin] = null;
-                coin.destroy();
-
-                switch (indexOfCoin) {
-                    case 0:
-                        this.coins[3] = (this.matter.add.image(this.leftCoinPoint.x, this.leftCoinPoint.y, 'silverCoin'));
-                        break;
-                    case 1:
-                        this.coins[0] = (this.matter.add.image(this.topCoinPoint.x, this.topCoinPoint.y, 'silverCoin'));
-                        break;
-                    case 2:
-                        this.coins[1] = (this.matter.add.image(this.rightCoinPoint.x, this.rightCoinPoint.y, 'silverCoin'));
-                        break;
-                    default:
-                        this.coins[2] = (this.matter.add.image(this.bottomCoinPoint.x, this.bottomCoinPoint.y, 'silverCoin'));
-                        break;
-                }
-            }
-        });
+        this.initCoins();
+        this.scoreText = this.add.text(50, 50, String(this.score));
+        this.matter.world.on('collisionstart', this.onCollisionStart.bind(this));
     }
 
-    private initPoints(): void {
-        let pigHeight = this.pig.displayHeight;
-        let coinDistanceFromOrigin = pigHeight * .71;
-        this.topCoinPoint = new Phaser.Geom.Point(this.pig.x, this.pig.y - coinDistanceFromOrigin);
-        this.rightCoinPoint = new Phaser.Geom.Point(this.pig.x + coinDistanceFromOrigin, this.pig.y);
-        this.bottomCoinPoint = new Phaser.Geom.Point(this.pig.x, this.pig.y + coinDistanceFromOrigin);
-        this.leftCoinPoint = new Phaser.Geom.Point(this.pig.x - coinDistanceFromOrigin, this.pig.y);
+    private onCollisionStart(event: any, body1: any, body2: any): void {
+        let coin: Phaser.GameObjects.GameObject;
+        if (body1.name != "piggy") {
+            coin = body1.gameObject;
+        } else {
+            coin = body2.gameObject;
+        }
+
+        let indexOfCoin: number = this.coins.indexOf(coin);
+        if (indexOfCoin != -1) {
+            this.onCoinCollision(coin, indexOfCoin);
+        }
+    }
+
+    private onCoinCollision(coin: GameObject, indexOfCoin: number): void {
+        coin.destroy();
+        this.score++;
+        this.scoreText.setText(String(this.score));
+
+        switch (indexOfCoin) {
+            case Position.TOP:
+                this.coins[Position.LEFT] = this.newLeftCoinImage();
+                break;
+            case Position.RIGHT:
+                this.coins[Position.TOP] = (this.newTopCoinImage());
+                break;
+            case Position.BOTTOM:
+                this.coins[Position.RIGHT] = (this.newRightCoinImage());
+                break;
+            case Position.LEFT:
+                this.coins[Position.BOTTOM] = (this.newBottomCoinImage());
+                break;
+        }
+    }
+
+    private initCoins(): void {
+        this.coinDistanceFromOrigin = this.pig.displayHeight * .71;
+        this.coins = [null, this.newRightCoinImage(), this.newBottomCoinImage(), this.newLeftCoinImage()];
+    }
+
+    private newTopCoinImage(): Phaser.Physics.Matter.Image {
+        return this.matter.add.image(this.pig.x, this.pig.y - this.coinDistanceFromOrigin, 'silverCoin');
+    }
+
+    private newRightCoinImage(): Phaser.Physics.Matter.Image {
+        return this.matter.add.image(this.pig.x + this.coinDistanceFromOrigin, this.pig.y, 'silverCoin');
+    }
+
+    private newBottomCoinImage(): Phaser.Physics.Matter.Image {
+        return this.matter.add.image(this.pig.x, this.pig.y + this.coinDistanceFromOrigin, 'silverCoin');
+    }
+
+    private newLeftCoinImage(): Phaser.Physics.Matter.Image {
+        return this.matter.add.image(this.pig.x - this.coinDistanceFromOrigin, this.pig.y, 'silverCoin');
     }
 
     //@Override
     public update(): void {
-        this.pig.setRotation(this.pig.rotation + 0.01);
+        this.pig.setRotation(this.pig.rotation + .02);
         this.whirlwind.setRotation(this.whirlwind.rotation + 0.0025)
     }
 }
