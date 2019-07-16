@@ -2,6 +2,7 @@
   "name": "vidya",
   "version": "0.0.1",
   "dependencies": {
+    "@types/matter-js": "^0.10.2",
     "phaser": "3.18.1"
   },
   "devDependencies": {
