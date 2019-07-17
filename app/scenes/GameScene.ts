@@ -18,9 +18,10 @@ export class GameScene extends Scene {
     //@Override
     public preload(): void {
         this.load.image('sky', 'assets/backdrop_sky.jpg');
-        this.load.image('pig', 'assets/piggy_silver.png');
+        this.load.image('piggySilver', 'assets/piggy_silver.png');
+        this.load.image('piggyGold', 'assets/piggy_gold.png');
         this.load.image('whirlwind', 'assets/whirlwind.png');
-        this.load.image('silverCoin', 'assets/coin_silver.png');
+        this.load.image('coinSilver', 'assets/coin_silver.png');
     }
 
     //@Override
@@ -33,7 +34,7 @@ export class GameScene extends Scene {
         this.whirlwind.setAlpha(0.5);
 
         let pigBodyOffset = 250;
-        this.pig = this.matter.add.image(this.centerPoint.x, this.centerPoint.y - pigBodyOffset, 'pig');
+        this.pig = this.matter.add.image(this.centerPoint.x, this.centerPoint.y - pigBodyOffset, 'piggySilver');
         this.pig.name = "piggy";
         let pigRect: any = this.pig.setRectangle(50, 100, null);
         pigRect.body.isStatic = true;
@@ -47,6 +48,19 @@ export class GameScene extends Scene {
         this.initCoins();
         this.scoreText = this.add.text(50, 50, String(this.score));
         this.matter.world.on('collisionstart', this.onCollisionStart.bind(this));
+        this.input.on('pointerdown', this.onPointerDown.bind(this));
+        this.input.on('pointerup', this.onPointerUp.bind(this));
+        this.input.on('pointerupoutside', this.onPointerUp.bind(this));
+    }
+
+    private onPointerDown(): void {
+        // @ts-ignore
+        this.pig.body.gameObject.setTexture('piggyGold');
+    }
+
+    private onPointerUp(): void {
+        // @ts-ignore
+        this.pig.body.gameObject.setTexture('piggySilver');
     }
 
     private onCollisionStart(event: any, body1: any, body2: any): void {
@@ -90,19 +104,19 @@ export class GameScene extends Scene {
     }
 
     private newTopCoinImage(): Phaser.Physics.Matter.Image {
-        return this.matter.add.image(this.pig.x, this.pig.y - this.coinDistanceFromOrigin, 'silverCoin');
+        return this.matter.add.image(this.pig.x, this.pig.y - this.coinDistanceFromOrigin, 'coinSilver');
     }
 
     private newRightCoinImage(): Phaser.Physics.Matter.Image {
-        return this.matter.add.image(this.pig.x + this.coinDistanceFromOrigin, this.pig.y, 'silverCoin');
+        return this.matter.add.image(this.pig.x + this.coinDistanceFromOrigin, this.pig.y, 'coinSilver');
     }
 
     private newBottomCoinImage(): Phaser.Physics.Matter.Image {
-        return this.matter.add.image(this.pig.x, this.pig.y + this.coinDistanceFromOrigin, 'silverCoin');
+        return this.matter.add.image(this.pig.x, this.pig.y + this.coinDistanceFromOrigin, 'coinSilver');
     }
 
     private newLeftCoinImage(): Phaser.Physics.Matter.Image {
-        return this.matter.add.image(this.pig.x - this.coinDistanceFromOrigin, this.pig.y, 'silverCoin');
+        return this.matter.add.image(this.pig.x - this.coinDistanceFromOrigin, this.pig.y, 'coinSilver');
     }
 
     //@Override
