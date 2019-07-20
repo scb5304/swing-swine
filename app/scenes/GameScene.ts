@@ -1,23 +1,26 @@
 import * as Phaser from 'phaser';
-import Scene = Phaser.Scene;
-import Image = Phaser.GameObjects.Image;
 import {Position} from "../models/Position";
-import GameObject = Phaser.GameObjects.GameObject;
+import {Sky} from "../models/Sky";
+import {Whirlwind} from "../models/Whirlwind";
+import {Pig} from "../models/Pig";
+import {Coin} from "../models/Coin";
+import Scene = Phaser.Scene;
+import Point = Phaser.Geom.Point;
 
 export class GameScene extends Scene {
 
     private centerPoint: Phaser.Geom.Point;
-    private sky: Image;
-    private whirlwind: Image;
-    private pig: Phaser.Physics.Matter.Image;
+    private sky: Sky;
+    private whirlwind: Whirlwind;
+    private pig: Pig;
+    private coins: Coin[] = [];
+
     private coinDistanceFromOrigin: number;
     private scoreText: Phaser.GameObjects.Text;
     private score: number = 0;
-    private coins: GameObject[] = [];
     private gameOver: boolean = false;
     private rotateAmount = 0.02;
 
-    //@Override
     public preload(): void {
         this.load.image('sky', 'assets/backdrop_sky.jpg');
         this.load.image('piggySilver', 'assets/piggy_silver.png');
@@ -25,148 +28,117 @@ export class GameScene extends Scene {
         this.load.image('whirlwind', 'assets/whirlwind.png');
         this.load.image('coinSilver', 'assets/coin_silver.png');
         this.load.image('coinGold', 'assets/coin_gold.png');
+        this.load.image('coinArrow', 'assets/coin_arrow.png');
     }
 
-    //@Override
     public create(): void {
-        this.initWorld();
-        this.initPig();
-        this.initCoins();
-        this.initInput();
-        this.initScore();
-    }
-
-    private initWorld(): void {
         this.centerPoint = new Phaser.Geom.Point(this.sys.canvas.width / 2, this.sys.canvas.height / 2);
-        this.matter.world.on('collisionstart', this.onCollisionStart.bind(this));
-        this.sky = this.add.image(this.centerPoint.x, this.centerPoint.y, 'sky');
+        this.sky = new Sky(this, this.centerPoint);
+        this.whirlwind = new Whirlwind(this, this.centerPoint);
+        this.pig = new Pig(this.matter.world, this.centerPoint);
 
-        this.whirlwind = this.add.image(this.centerPoint.x, this.centerPoint.y, 'whirlwind');
-        this.whirlwind.setScale(0.5, 0.5);
-        this.whirlwind.setAlpha(0.5);
-    }
-
-    private initPig(): void {
-        let pigBodyOffset = 250;
-        this.pig = this.matter.add.image(this.centerPoint.x, this.centerPoint.y - pigBodyOffset, 'piggySilver');
-        let pigRect: any = this.pig.setRectangle(50, 100, null);
-        pigRect.body.isStatic = true;
-        pigRect.body.position.y += pigBodyOffset;
-        pigRect.body.name = "piggy";
-
-        let pigHeight = this.pig.displayHeight;
-        let pigWidth = this.pig.displayWidth;
-        this.pig.setDisplayOrigin(pigWidth / 2, pigHeight);
-    }
-
-    private initCoins(): void {
         this.coinDistanceFromOrigin = this.pig.displayHeight * .71;
-        this.coins = [null, this.newRightCoinImage(), this.newBottomCoinImage(), this.newLeftCoinImage()];
-    }
+        this.coins = [null, this.newCoinForPosition(Position.RIGHT), this.newCoinForPosition(Position.BOTTOM), this.newCoinForPosition(Position.LEFT)];
 
-    private initInput(): void {
+        this.scoreText = this.add.text(50, 50, String(this.score), {
+            fontSize: '34px'
+        });
+        this.matter.world.on('collisionstart', this.onCollisionStart.bind(this));
+
         this.input.on('pointerdown', this.onPointerDown.bind(this));
         this.input.on('pointerup', this.onPointerUp.bind(this));
         this.input.on('pointerupoutside', this.onPointerUp.bind(this));
     }
 
-    private initScore(): void {
-        this.scoreText = this.add.text(50, 50, String(this.score), {
-            fontSize: '34px'
-        });
+    public update(): void {
+        if (!this.gameOver) {
+            this.pig.setRotation(this.pig.rotation + this.rotateAmount);
+            this.whirlwind.setRotation(this.whirlwind.rotation + 0.0025);
+        }
     }
 
     private onPointerDown(): void {
-        (<any>this.pig.body).gameObject.setTexture('piggyGold');
+        this.pig.setColor("Gold");
     }
 
     private onPointerUp(): void {
-        (<any>this.pig.body).gameObject.setTexture('piggySilver');
+        this.pig.setColor("Silver");
+    }
+
+    private newCoinForPosition(position: number): Coin {
+        let coin: Coin = new Coin(this.matter.world, new Point(this.pig.x, this.pig.y), position, this.coinDistanceFromOrigin);
+        this.children.add(coin);
+        return coin;
     }
 
     private onCollisionStart(event: any, body1: any, body2: any): void {
-        let coin: Phaser.GameObjects.GameObject;
-        if (body1.name != "piggy") {
-            coin = body1.gameObject;
-        } else {
-            coin = body2.gameObject;
-        }
-
+        let coin: Coin;
+        coin = (body1.gameObject instanceof Coin) ? body1.gameObject : body2.gameObject;
         let indexOfCoin: number = this.coins.indexOf(coin);
         if (indexOfCoin != -1) {
             this.onCoinCollision(coin, indexOfCoin);
         }
     }
 
-    private onCoinCollision(coin: GameObject, indexOfCoin: number): void {
-        if (this.isCoinPiggyMatch(coin)) {
-            switch (indexOfCoin) {
-                case Position.TOP:
-                    this.coins[Position.LEFT] = this.newLeftCoinImage();
-                    break;
-                case Position.RIGHT:
-                    this.coins[Position.TOP] = this.newTopCoinImage();
-                    break;
-                case Position.BOTTOM:
-                    this.coins[Position.RIGHT] = this.newRightCoinImage();
-                    break;
-                case Position.LEFT:
-                    this.coins[Position.BOTTOM] = this.newBottomCoinImage();
-                    break;
-            }
-            coin.destroy();
-            this.rotateAmount += 0.001;
-            this.score++;
-            this.scoreText.setText(String(this.score));
+    private onCoinCollision(coin: Coin, indexOfCoin: number): void {
+        if (this.pig.acceptsCoin(coin)) {
+            this.onValidCoinCollision(coin, indexOfCoin);
         } else {
-            // @ts-ignore
-            coin.body.isStatic = true;
-            this.gameOver = true;
+            this.onInvalidCoinCollision(coin);
+        }
+        if (coin.isArrow()) {
+            this.pig.flipX = !this.pig.flipX;
+            this.rotateAmount = -this.rotateAmount;
         }
     }
 
-    private isCoinPiggyMatch(coin: GameObject): boolean {
-        let piggyImage = this.pigImage();
-        let coinImage = GameScene.coinImage(coin);
-        return (piggyImage.indexOf("silver") != -1 && coinImage.indexOf("silver") != -1) ||
-            (piggyImage.indexOf("gold") != -1 && coinImage.indexOf("gold") != -1);
-    }
-
-    private pigImage(): String {
-        // @ts-ignore
-        return this.pig.body.gameObject.texture.key.toLowerCase();
-    }
-
-    private static coinImage(coin: GameObject): string {
-        // @ts-ignore
-        return coin.texture.key.toLowerCase();
-    }
-
-    private static randomCoinColor(): string {
-        return Math.random() > 0.5 ? 'coinSilver' : 'coinGold';
-    }
-
-    private newTopCoinImage(): Phaser.Physics.Matter.Image {
-        return this.matter.add.image(this.pig.x, this.pig.y - this.coinDistanceFromOrigin, GameScene.randomCoinColor());
-    }
-
-    private newRightCoinImage(): Phaser.Physics.Matter.Image {
-        return this.matter.add.image(this.pig.x + this.coinDistanceFromOrigin, this.pig.y, GameScene.randomCoinColor());
-    }
-
-    private newBottomCoinImage(): Phaser.Physics.Matter.Image {
-        return this.matter.add.image(this.pig.x, this.pig.y + this.coinDistanceFromOrigin, GameScene.randomCoinColor());
-    }
-
-    private newLeftCoinImage(): Phaser.Physics.Matter.Image {
-        return this.matter.add.image(this.pig.x - this.coinDistanceFromOrigin, this.pig.y, GameScene.randomCoinColor());
-    }
-
-    //@Override
-    public update(): void {
-        if (!this.gameOver) {
-            this.pig.setRotation(this.pig.rotation + this.rotateAmount);
-            this.whirlwind.setRotation(this.whirlwind.rotation + 0.0025);
+    private onValidCoinCollision(coin: Coin, indexOfCoin: number): void {
+        this.increaseScore();
+        this.spawnNewCoinAfterCollision(indexOfCoin);
+        coin.destroy();
+        if (this.rotateAmount < 0) {
+            this.rotateAmount -= 0.001;
+        } else {
+            this.rotateAmount += 0.001;
         }
+    }
+
+    private onInvalidCoinCollision(coin: Coin): void {
+        // @ts-ignore
+        coin.body.isStatic = true;
+        this.gameOver = true;
+    }
+
+    private spawnNewCoinAfterCollision(indexOfCollisionCoin: number): void {
+        if (indexOfCollisionCoin === Position.TOP) {
+            if (this.rotateAmount > 0) {
+                this.coins[Position.LEFT] = this.newCoinForPosition(Position.LEFT);
+            } else {
+                this.coins[Position.RIGHT] = this.newCoinForPosition(Position.RIGHT);
+            }
+        } else if (indexOfCollisionCoin === Position.RIGHT) {
+            if (this.rotateAmount > 0) {
+                this.coins[Position.TOP] = this.newCoinForPosition(Position.TOP);
+            } else {
+                this.coins[Position.BOTTOM] = this.newCoinForPosition(Position.BOTTOM);
+            }
+        } else if (indexOfCollisionCoin === Position.BOTTOM) {
+            if (this.rotateAmount > 0) {
+                this.coins[Position.RIGHT] = this.newCoinForPosition(Position.RIGHT);
+            } else {
+                this.coins[Position.LEFT] = this.newCoinForPosition(Position.LEFT);
+            }
+        } else {
+            if (this.rotateAmount > 0) {
+                this.coins[Position.BOTTOM] = this.newCoinForPosition(Position.BOTTOM);
+            } else {
+                this.coins[Position.TOP] = this.newCoinForPosition(Position.TOP);
+            }
+        }
+    }
+
+    private increaseScore(): void {
+        this.score++;
+        this.scoreText.setText(String(this.score));
     }
 }
