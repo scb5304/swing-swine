@@ -1,7 +1,7 @@
 import Point = Phaser.Geom.Point;
-import {Coin} from "./Coin";
+import Coin from "./Coin";
 
-export class Pig extends Phaser.Physics.Matter.Image {
+export default class Pig extends Phaser.Physics.Matter.Image {
 
     public color: string;
 

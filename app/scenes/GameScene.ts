@@ -1,9 +1,10 @@
 import * as Phaser from 'phaser';
-import {Position} from "../models/Position";
-import {Sky} from "../models/Sky";
-import {Whirlwind} from "../models/Whirlwind";
-import {Pig} from "../models/Pig";
-import {Coin} from "../models/Coin";
+import Position from "../models/Position";
+import Sky from "../models/Sky";
+import Whirlwind from "../models/Whirlwind";
+import Pig from "../models/Pig";
+import Coin from "../models/Coin";
+import DefeatScene from "./DefeatScene";
 import Scene = Phaser.Scene;
 import Point = Phaser.Geom.Point;
 
@@ -20,6 +21,10 @@ export class GameScene extends Scene {
     private score: number = 0;
     private gameOver: boolean = false;
     private rotateAmount = 0.02;
+
+    constructor() {
+        super("GameScene");
+    }
 
     public preload(): void {
         this.load.image('sky', 'assets/backdrop_sky.jpg');
@@ -107,6 +112,10 @@ export class GameScene extends Scene {
         // @ts-ignore
         coin.body.isStatic = true;
         this.gameOver = true;
+        setTimeout(() => {
+            this.game.scene.remove(this);
+            this.game.scene.add('DefeatScene', DefeatScene, true);
+        }, 1000);
     }
 
     private spawnNewCoinAfterCollision(indexOfCollisionCoin: number): void {
@@ -140,5 +149,7 @@ export class GameScene extends Scene {
     private increaseScore(): void {
         this.score++;
         this.scoreText.setText(String(this.score));
+        this.scoreText.y -= 4;
+        setTimeout(() => this.scoreText.y += 4, 25);
     }
 }

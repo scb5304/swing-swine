@@ -1,17 +1,16 @@
 import Game = Phaser.Game;
-import * as Phaser from 'phaser';
 import GameConfig = Phaser.Types.Core.GameConfig;
-import {GameScene} from "./scenes/GameScene";
-import ArcadePhysics = Phaser.Physics.Arcade.ArcadePhysics;
+import * as Phaser from 'phaser';
 
 export class VidyaGame extends Game {
     constructor() {
         let gameConfig: GameConfig = {
             type: Phaser.AUTO,
-            width: 1080,
-            height: 720,
-            scene: [GameScene],
+            width: 720,
+            height: 1080,
             input: true,
+            autoFocus: true,
+            disableContextMenu: true,
             physics: {
                 default: 'matter',
                 matter: {

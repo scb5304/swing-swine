@@ -6,7 +6,7 @@ export class Booter {
 
     constructor() {
         this.game = new VidyaGame();
-        this.game.scene.start('GameScene')
+        this.game.scene.add('GameScene', GameScene, true)
     }
 }
 
