@@ -20,7 +20,7 @@ export class GameScene extends Scene {
     private scoreText: Phaser.GameObjects.Text;
     private score: number = 0;
     private gameOver: boolean = false;
-    private rotateAmount = 0.02;
+    private rotateAmount = 0.015;
 
     constructor() {
         super("GameScene");
@@ -125,7 +125,9 @@ export class GameScene extends Scene {
         this.playPigOinkSound();
         setTimeout(() => {
             this.game.scene.remove(this);
-            this.game.scene.add('DefeatScene', DefeatScene, true);
+            this.game.scene.add('DefeatScene', DefeatScene, true, {
+                score: this.score
+            });
         }, 1000);
     }
 
