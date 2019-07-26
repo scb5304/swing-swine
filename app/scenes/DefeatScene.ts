@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import {GameScene} from "./GameScene";
+import {MenuScene} from "./MenuScene";
 import Scene = Phaser.Scene;
 import Text = Phaser.GameObjects.Text;
 import Image = Phaser.GameObjects.Image;
@@ -11,6 +12,7 @@ export default class DefeatScene extends Scene {
     private centerPoint: Point;
     private youGotText: Text;
     private playAgainText: Text;
+    private mainMenuText: Text;
 
     constructor() {
         super("DefeatScene");
@@ -68,7 +70,12 @@ export default class DefeatScene extends Scene {
     }
 
     private initMainMenuText(): void {
-        this.add.text(this.centerPoint.x, this.playAgainText.y + 110, 'Main Menu', DefeatScene.commonStyle());
+        this.mainMenuText = this.add.text(this.centerPoint.x, this.playAgainText.y + 110, 'Main Menu', DefeatScene.commonStyle());
+        this.mainMenuText.on('pointerdown', () => {
+            this.game.scene.remove(this);
+            this.game.scene.add('MenuScene', MenuScene, true);
+        });
+        this.input.enable(this.mainMenuText);
     }
 
     private applyCommon(): void {
