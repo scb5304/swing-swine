@@ -9,6 +9,7 @@ import Point = Phaser.Geom.Point;
 export default class DefeatScene extends Scene {
 
     private score: number;
+    private highScore: number;
     private centerPoint: Point;
     private youGotText: Text;
     private playAgainText: Text;
@@ -21,10 +22,15 @@ export default class DefeatScene extends Scene {
     public preload(): void {
         this.load.image('sky', 'assets/backdrop_sky.jpg');
         this.load.image('piggyCoinCount', 'assets/piggy_coin_count.png');
+        this.load.audio('highScore', 'assets/high_score.mp3');
     }
 
     public init(data: any): void {
         this.score = data.score || 0;
+        this.highScore = Number(window.localStorage.getItem('highScore')) || 0;
+        if (this.isHighScore()) {
+            window.localStorage.setItem('highScore', String(this.score));
+        }
     }
 
     public create(): void {
@@ -57,7 +63,14 @@ export default class DefeatScene extends Scene {
     private initHighScoreText(): void {
         let highScoreStyle = DefeatScene.commonStyle();
         highScoreStyle.fontSize = '45px';
-        this.add.text(this.centerPoint.x, this.youGotText.y + 100, "(High Score: " + (this.score + 5) + ")", highScoreStyle);
+        let highScoreTextContent = "";
+        if (this.isHighScore()) {
+            highScoreTextContent = "New High Score!!!"
+            this.sound.play('highScore');
+        } else {
+            highScoreTextContent = "(High Score: " + (this.highScore) + ")";
+        }
+        this.add.text(this.centerPoint.x, this.youGotText.y + 100, highScoreTextContent, highScoreStyle);
     }
 
     private initPlayAgainText(): void {
@@ -76,6 +89,10 @@ export default class DefeatScene extends Scene {
             this.game.scene.add('MenuScene', MenuScene, true);
         });
         this.input.enable(this.mainMenuText);
+    }
+
+    private isHighScore(): boolean {
+        return this.score > 0 && this.score > this.highScore;
     }
 
     private applyCommon(): void {

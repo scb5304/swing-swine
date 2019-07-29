@@ -36,6 +36,7 @@ export class GameScene extends Scene {
         this.load.image('coinArrow', 'assets/coin_arrow.png');
 
         this.load.audio('soundCoinCollect', 'assets/coin_collect.mp3');
+        this.load.audio('soundCoinClash', 'assets/coin_clash.mp3');
         this.load.audio('soundCoinArrow', 'assets/coin_arrow.mp3');
         this.load.audio('soundPiggyFlip', 'assets/piggy_flip.mp3');
         this.load.audio('soundPiggyOink', 'assets/piggy_oink.mp3');
@@ -122,7 +123,7 @@ export class GameScene extends Scene {
         // @ts-ignore
         coin.body.isStatic = true;
         this.gameOver = true;
-        this.playPigOinkSound();
+        this.playCoinClashSound();
         setTimeout(() => {
             this.game.scene.remove(this);
             this.game.scene.add('DefeatScene', DefeatScene, true, {
@@ -174,15 +175,15 @@ export class GameScene extends Scene {
         this.sound.play('soundCoinCollect');
     }
 
+    private playCoinClashSound(): void {
+        this.sound.play('soundCoinClash');
+    }
+
     private playCoinArrowSpawnSound(): void {
         this.sound.play('soundCoinArrow');
     }
 
     private playPigFlipSound(): void {
         this.sound.play('soundPiggyFlip');
-    }
-
-    private playPigOinkSound(): void {
-        this.sound.play('soundPiggyOink');
     }
 }
