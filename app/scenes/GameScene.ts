@@ -109,7 +109,7 @@ export class GameScene extends Scene {
     private onValidCoinCollision(coin: Coin, indexOfCoin: number): void {
         this.increaseScore();
         this.playCoinCollectSound();
-        this.spawnNewCoinAfterCollision(indexOfCoin);
+        this.spawnNewCoinAfterCollision(coin, indexOfCoin);
         coin.destroy();
         if (this.rotateAmount < 0) {
             this.rotateAmount -= 0.001;
@@ -131,7 +131,11 @@ export class GameScene extends Scene {
         }, 1000);
     }
 
-    private spawnNewCoinAfterCollision(indexOfCollisionCoin: number): void {
+    private spawnNewCoinAfterCollision(coin: Coin, indexOfCollisionCoin: number): void {
+        if (coin.isArrow()) {
+            this.coins[indexOfCollisionCoin] = this.newCoinForPosition(indexOfCollisionCoin);
+            return;
+        }
         if (indexOfCollisionCoin === Position.TOP) {
             if (this.rotateAmount > 0) {
                 this.coins[Position.LEFT] = this.newCoinForPosition(Position.LEFT);
