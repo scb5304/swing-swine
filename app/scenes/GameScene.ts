@@ -51,9 +51,11 @@ export class GameScene extends Scene {
         this.coinDistanceFromOrigin = this.pig.displayHeight * .71;
         this.coins = [null, this.newCoinForPosition(Position.RIGHT), this.newCoinForPosition(Position.BOTTOM), this.newCoinForPosition(Position.LEFT)];
 
-        this.scoreText = this.add.text(50, 50, String(this.score), {
-            fontSize: '34px'
+        this.scoreText = this.add.text(60, 50, String(this.score), {
+            fontFamily: 'Roboto',
+            fontSize: '72px'
         });
+        this.scoreText.alpha = 0.6;
         this.matter.world.on('collisionstart', this.onCollisionStart.bind(this));
 
         this.input.on('pointerdown', this.onPointerDown.bind(this));
@@ -119,6 +121,7 @@ export class GameScene extends Scene {
         } else {
             this.rotateAmount += rotateAmountIncrement;
         }
+        this.scoreText.alpha += 0.008;
     }
 
     private onInvalidCoinCollision(coin: Coin): void {
@@ -127,10 +130,10 @@ export class GameScene extends Scene {
         this.gameOver = true;
         this.playCoinClashSound();
         setTimeout(() => {
-            this.game.scene.remove(this);
             this.game.scene.add('DefeatScene', DefeatScene, true, {
                 score: this.score
             });
+            this.game.scene.remove(this);
         }, 1000);
     }
 
