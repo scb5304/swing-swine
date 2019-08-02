@@ -112,10 +112,12 @@ export class GameScene extends Scene {
         this.playCoinCollectSound();
         this.spawnNewCoinAfterCollision(coin, indexOfCoin);
         coin.destroy();
+
+        let rotateAmountIncrement = 0.00003 / Math.abs(this.rotateAmount);
         if (this.rotateAmount < 0) {
-            this.rotateAmount -= 0.001;
+            this.rotateAmount -= rotateAmountIncrement;
         } else {
-            this.rotateAmount += 0.001;
+            this.rotateAmount += rotateAmountIncrement;
         }
     }
 
