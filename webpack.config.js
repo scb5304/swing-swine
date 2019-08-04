@@ -26,7 +26,8 @@ module.exports = {
             {from: 'app/assets', to: 'assets'}
         ], {debug: 'error'}),
         new HtmlWebpackPlugin({
-            template: 'app/index.html'
+            template: 'app/index.html',
+            favicon: 'app/assets/images/favicon.png'
         })
     ]
 };

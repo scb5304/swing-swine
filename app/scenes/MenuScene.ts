@@ -22,9 +22,9 @@ export class MenuScene extends Scene {
     }
 
     public preload(): void {
-        this.load.image('sky', 'assets/backdrop_sky.jpg');
-        this.load.image('logo', 'assets/logo.png');
-        this.load.image('piggy', 'assets/piggy_plain.png');
+        this.load.image('sky', 'assets/images/backdrop_sky.jpg');
+        this.load.image('logo', 'assets/images/logo.png');
+        this.load.image('piggy', 'assets/images/piggy_plain.png');
     }
 
     public create(): void {

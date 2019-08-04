@@ -22,9 +22,9 @@ export default class DefeatScene extends Scene {
     }
 
     public preload(): void {
-        this.load.image('sky', 'assets/backdrop_sky.jpg');
-        this.load.image('piggyCoinCount', 'assets/piggy_coin_count.png');
-        this.load.audio('highScore', 'assets/high_score.mp3');
+        this.load.image('sky', 'assets/images/backdrop_sky.jpg');
+        this.load.image('piggyCoinCount', 'assets/images/piggy_coin_count.png');
+        this.load.audio('highScore', 'assets/sounds/high_score.mp3');
     }
 
     public init(data: any): void {

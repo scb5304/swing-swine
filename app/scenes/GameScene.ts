@@ -27,19 +27,19 @@ export class GameScene extends Scene {
     }
 
     public preload(): void {
-        this.load.image('sky', 'assets/backdrop_sky.jpg');
-        this.load.image('piggySilver', 'assets/piggy_silver.png');
-        this.load.image('piggyGold', 'assets/piggy_gold.png');
-        this.load.image('whirlwind', 'assets/whirlwind.png');
-        this.load.image('coinSilver', 'assets/coin_silver.png');
-        this.load.image('coinGold', 'assets/coin_gold.png');
-        this.load.image('coinArrow', 'assets/coin_arrow.png');
+        this.load.image('sky', 'assets/images/backdrop_sky.jpg');
+        this.load.image('piggySilver', 'assets/images/piggy_silver.png');
+        this.load.image('piggyGold', 'assets/images/piggy_gold.png');
+        this.load.image('whirlwind', 'assets/images/whirlwind.png');
+        this.load.image('coinSilver', 'assets/images/coin_silver.png');
+        this.load.image('coinGold', 'assets/images/coin_gold.png');
+        this.load.image('coinArrow', 'assets/images/coin_arrow.png');
 
-        this.load.audio('soundCoinCollect', 'assets/coin_collect.mp3');
-        this.load.audio('soundCoinClash', 'assets/coin_clash.mp3');
-        this.load.audio('soundCoinArrow', 'assets/coin_arrow.mp3');
-        this.load.audio('soundPiggyFlip', 'assets/piggy_flip.mp3');
-        this.load.audio('soundPiggyOink', 'assets/piggy_oink.mp3');
+        this.load.audio('soundCoinCollect', 'assets/sounds/coin_collect.mp3');
+        this.load.audio('soundCoinClash', 'assets/sounds/coin_clash.mp3');
+        this.load.audio('soundCoinArrow', 'assets/sounds/coin_arrow.mp3');
+        this.load.audio('soundPiggyFlip', 'assets/sounds/piggy_flip.mp3');
+        this.load.audio('soundPiggyOink', 'assets/sounds/piggy_oink.mp3');
     }
 
     public create(): void {
