@@ -6,11 +6,11 @@ export class VidyaGame extends Game {
     constructor() {
         let gameConfig: GameConfig = {
             type: Phaser.AUTO,
-            width: 720,
-            height: 1080,
+            width: window.innerWidth,
+            height: window.innerHeight,
             input: true,
             autoFocus: true,
-            disableContextMenu: true,
+            disableContextMenu: false,
             physics: {
                 default: 'matter',
                 matter: {

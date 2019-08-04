@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import {GameScene} from "./GameScene";
 import {MenuScene} from "./MenuScene";
+import Sky from "../models/Sky";
 import Scene = Phaser.Scene;
 import Text = Phaser.GameObjects.Text;
 import Image = Phaser.GameObjects.Image;
@@ -10,6 +11,7 @@ export default class DefeatScene extends Scene {
 
     private score: number;
     private highScore: number;
+    private sky: Sky;
     private centerPoint: Point;
     private youGotText: Text;
     private playAgainText: Text;
@@ -35,8 +37,7 @@ export default class DefeatScene extends Scene {
 
     public create(): void {
         this.centerPoint = new Phaser.Geom.Point(this.sys.canvas.width / 2, this.sys.canvas.height / 2);
-        this.add.image(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'sky');
-
+        this.sky = new Sky(this, this.centerPoint);
         this.initPiggyBankScore();
         this.initYouGotText();
         this.initPlayAgainText();

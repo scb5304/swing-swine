@@ -22,16 +22,11 @@ module.exports = {
         path: path.resolve(__dirname, 'dist')
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            title: "Swing Swine",
-            meta: {
-                'Cache-Control': {'http-equiv': 'Cache-Control', 'content': 'no-cache, no-store, must-revalidate'},
-                'Pragma': {'http-equiv': 'Pragma', 'content': 'no-cache'},
-                'Expires': {'http-equiv': 'Expires', 'content': '0'}
-            }
-        }),
         new CopyWebpackPlugin([
             {from: 'app/assets', to: 'assets'}
-        ], {debug: 'error'})
+        ], {debug: 'error'}),
+        new HtmlWebpackPlugin({
+            template: 'app/index.html'
+        })
     ]
 };
