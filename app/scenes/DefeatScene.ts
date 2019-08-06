@@ -11,6 +11,7 @@ export default class DefeatScene extends Scene {
 
     private score: number;
     private highScore: number;
+    private coinCount: number;
     private sky: Sky;
     private centerPoint: Point;
     private youGotText: Text;
@@ -33,6 +34,9 @@ export default class DefeatScene extends Scene {
         if (this.isHighScore()) {
             window.localStorage.setItem('highScore', String(this.score));
         }
+        let currentCoinCount = window.localStorage.getItem('coinCount') || 0;
+        this.coinCount = Number(currentCoinCount) + this.score;
+        window.localStorage.setItem('coinCount', String(this.coinCount));
     }
 
     public create(): void {
@@ -50,7 +54,7 @@ export default class DefeatScene extends Scene {
         let coinCountPiggy: Image = this.add.image(this.sys.canvas.width - 110, 110, 'piggyCoinCount');
         let scoreStyle = DefeatScene.commonStyle();
         scoreStyle.padding = 0;
-        this.add.text(coinCountPiggy.x + 5, coinCountPiggy.y - 20, String(this.score), scoreStyle);
+        this.add.text(coinCountPiggy.x + 5, coinCountPiggy.y - 20, String(this.coinCount), scoreStyle);
     }
 
     private initYouGotText(): void {
@@ -66,7 +70,7 @@ export default class DefeatScene extends Scene {
         highScoreStyle.fontSize = '45px';
         let highScoreTextContent = "";
         if (this.isHighScore()) {
-            highScoreTextContent = "New High Score!!!"
+            highScoreTextContent = "New High Score!!!";
             this.sound.play('highScore');
         } else {
             highScoreTextContent = "(High Score: " + (this.highScore) + ")";

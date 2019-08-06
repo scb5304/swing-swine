@@ -20,7 +20,7 @@ export class GameScene extends Scene {
     private scoreText: Phaser.GameObjects.Text;
     private score: number = 0;
     private gameOver: boolean = false;
-    private rotateAmount = 0.015;
+    private rotateAmount = 0.012;
 
     constructor() {
         super("GameScene");
@@ -66,7 +66,7 @@ export class GameScene extends Scene {
     public update(): void {
         if (!this.gameOver) {
             this.pig.setRotation(this.pig.rotation + this.rotateAmount);
-            this.whirlwind.setRotation(this.whirlwind.rotation + 0.0025);
+            this.whirlwind.setRotation(this.whirlwind.rotation + (this.rotateAmount / 4));
         }
     }
 
