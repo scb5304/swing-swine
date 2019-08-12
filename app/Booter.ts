@@ -6,7 +6,8 @@ export class Booter {
 
     constructor() {
         this.game = new VidyaGame();
-        this.game.scene.add('MenuScene', MenuScene, true)
+        this.game.scene.add('MenuScene', MenuScene, true);
+        this.game.scale.lockOrientation("portrait");
     }
 }
 

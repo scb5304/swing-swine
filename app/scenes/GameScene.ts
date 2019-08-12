@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
 import Position from "../models/Position";
-import Sky from "../models/Sky";
 import Whirlwind from "../models/Whirlwind";
 import Pig from "../models/Pig";
 import Coin from "../models/Coin";
@@ -11,7 +10,6 @@ import Point = Phaser.Geom.Point;
 export class GameScene extends Scene {
 
     private centerPoint: Phaser.Geom.Point;
-    private sky: Sky;
     private whirlwind: Whirlwind;
     private pig: Pig;
     private coins: Coin[] = [];
@@ -27,7 +25,6 @@ export class GameScene extends Scene {
     }
 
     public preload(): void {
-        this.load.image('sky', 'assets/images/backdrop_sky.jpg');
         this.load.image('piggySilver', 'assets/images/piggy_silver.png');
         this.load.image('piggyGold', 'assets/images/piggy_gold.png');
         this.load.image('whirlwind', 'assets/images/whirlwind.png');
@@ -44,7 +41,6 @@ export class GameScene extends Scene {
 
     public create(): void {
         this.centerPoint = new Phaser.Geom.Point(this.sys.canvas.width / 2, this.sys.canvas.height / 2);
-        this.sky = new Sky(this, this.centerPoint);
         this.whirlwind = new Whirlwind(this, this.centerPoint);
         this.pig = new Pig(this.matter.world, this.centerPoint);
 

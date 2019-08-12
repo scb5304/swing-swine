@@ -4,7 +4,6 @@ import Text = Phaser.GameObjects.Text;
 import Image = Phaser.GameObjects.Image;
 import * as Phaser from "phaser";
 import {GameScene} from "./GameScene";
-import Sky from "../models/Sky";
 
 export class MenuScene extends Scene {
 
@@ -13,7 +12,6 @@ export class MenuScene extends Scene {
     private optionsText: Text;
     private howToPlayText: Text;
     private piggyMarketText: Text;
-    private sky: Sky;
     private piggy: Image;
     private rotateAmount = 0.002;
 
@@ -22,14 +20,12 @@ export class MenuScene extends Scene {
     }
 
     public preload(): void {
-        this.load.image('sky', 'assets/images/backdrop_sky.jpg');
         this.load.image('logo', 'assets/images/logo.png');
         this.load.image('piggy', 'assets/images/piggy_plain.png');
     }
 
     public create(): void {
         this.centerPoint = new Phaser.Geom.Point(this.sys.canvas.width / 2, this.sys.canvas.height / 2);
-        this.sky = new Sky(this, this.centerPoint);
         let logo: Image = this.add.image(this.sys.canvas.width / 2, 170, 'logo');
         logo.setAngle(-7);
 

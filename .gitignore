@@ -3,3 +3,5 @@ node_modules
 npm-debug**.log
 www
 dist
+cordova_project/platforms
+cordova_project/plugins

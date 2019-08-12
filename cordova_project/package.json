@@ -1,0 +1,22 @@
+{
+  "name": "swing_swine",
+  "displayName": "Swine Swine",
+  "version": "1.0.0",
+  "description": "Swingity Swoongity",
+  "author": "Steven Brown",
+  "license": "Mine",
+  "dependencies": {
+    "cordova-android": "8.0.0"
+  },
+  "devDependencies": {
+    "cordova-plugin-whitelist": "1.3.4"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {}
+    },
+    "platforms": [
+      "android"
+    ]
+  }
+}
