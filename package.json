@@ -3,15 +3,15 @@
   "version": "0.0.1",
   "dependencies": {
     "@types/matter-js": "^0.10.2",
-    "phaser": "3.18.1"
+    "phaser": "3.55.2"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "5.0.3",
-    "html-webpack-plugin": "3.2.0",
-    "ts-loader": "6.0.4",
+    "copy-webpack-plugin": "11.0.0",
+    "html-webpack-plugin": "5.5.0",
+    "ts-loader": "9.4.2",
     "typescript": "3.5.3",
-    "webpack": "4.35.3",
-    "webpack-cli": "3.3.3",
+    "webpack": "5.75.0",
+    "webpack-cli": "5.0.1",
     "webpack-dev-server": "3.7.2"
   },
   "scripts": {
